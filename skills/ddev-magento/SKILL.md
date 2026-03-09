@@ -1,44 +1,46 @@
 ---
 name: ddev-magento
-description: "Manage and operate Magento 2 on DDEV with MySQL, Redis, Elasticsearch, RabbitMQ, and Varnish services."
+description: "Advanced management for Magento 2 on DDEV with MariaDB, Redis, Elasticsearch 8, RabbitMQ, Varnish, PhpMyAdmin, and XHGui/XHProf."
 ---
 
 # Workflow
 
-This skill helps you interact efficiently with Magento 2 projects running on the DDEV platform.
+This skill provides comprehensive management for high-performance Magento 2 environments on DDEV.
 
-## 1. Startup & Setup
-*   **Start environment:** Run `ddev start`.
-*   **Install Composer packages:** Run `ddev composer install`.
-*   **Check service status:** Run `ddev describe` or `ddev status`.
+## 1. Environment & Services
+*   **Start/Stop:** Use `ddev start` or `ddev stop`.
+*   **Project Info:** Run `ddev describe` to see URLs for:
+    *   **Web Server:** (Main store URL)
+    *   **PhpMyAdmin:** Database management interface.
+    *   **Mailpit:** Email testing interface.
+    *   **XHGui:** Performance profiling UI.
+    *   **RabbitMQ:** Management dashboard.
 
-## 2. Deployment & Upgrade Workflow
-When code or database changes occur, follow these steps:
-1.  **Upgrade database:** `ddev magento setup:upgrade` (or `ddev upgrade` if the project has a custom command).
-2.  **Compile DI:** `ddev magento setup:di:compile`.
-3.  **Deploy Static Content:** `ddev magento setup:static-content:deploy -f`.
-4.  **Flush cache:** `ddev magento cache:flush`.
+## 2. Magento 2 Operations
+*   **Full Upgrade:** Run `ddev upgrade` (Custom command) or `ddev magento setup:upgrade`.
+*   **Reindexing:** Run `ddev reindex`.
+*   **Compilation:** `ddev magento setup:di:compile`.
+*   **Static Assets:** `ddev magento setup:static-content:deploy -f`.
+*   **Cache:** `ddev magento cache:flush`.
 
-## 3. Cache Management
-*   **Flush all caches:** `ddev magento cache:flush`.
-*   **Clean specific cache:** `ddev magento cache:clean [type]`.
-*   **Enable/Disable cache:** `ddev magento cache:enable` or `ddev magento cache:disable`.
+## 3. Specialized Services Management
+*   **Elasticsearch 8:** Access via `http://elasticsearch:9200` inside the container. Check status: `ddev exec curl -s elasticsearch:9200`.
+*   **Redis:** Direct CLI access via `ddev redis-cli`.
+*   **Varnish:** Managed via the Varnish container. Purge cache using `ddev magento cache:flush`.
+*   **RabbitMQ:** Configure in `env.php` using host `rabbitmq`.
+*   **Profiling (XHGui/XHProf):**
+    *   Enable profiling for web requests via config.
+    *   Use `ddev profile-cli <command>` to profile Magento CLI commands.
 
-## 4. Services Management
-*   **Redis:** Access redis-cli via `ddev redis-cli`.
-*   **MySQL:** Access MySQL via `ddev mysql`.
-*   **RabbitMQ:** View the management interface via the URL provided by `ddev describe`.
-*   **Elasticsearch/OpenSearch:** Check status using `ddev exec curl -s http://elasticsearch:9200`.
-*   **Varnish:** Check Varnish configuration and status.
+## 4. Development & Troubleshooting
+*   **Logs:** 
+    *   `ddev logs -f` (All logs)
+    *   `ddev logs -f web` (Nginx/PHP logs)
+    *   `ddev logs -f db` (MariaDB logs)
+*   **SSH Access:** `ddev ssh` to enter the web container.
+*   **Database:** `ddev mysql` for CLI access or use PhpMyAdmin URL from `ddev describe`.
+*   **Snapshot:** `ddev snapshot` to backup the database before risky operations.
 
-## 5. Troubleshooting
-*   **View web server logs:** `ddev logs -f web`.
-*   **View database logs:** `ddev logs -f db`.
-*   **Restart environment:** `ddev restart`.
-*   **SSH into container:** `ddev ssh`.
-
-## 6. Custom Commands
-If defined in the project, you can use:
-*   `ddev reindex`: To reindex all data.
-*   `ddev setup-install`: To reinstall Magento from scratch.
-*   `ddev setup-domain`: To configure domains for the project.
+## 5. Setup & Domain
+*   **Fresh Install:** `ddev setup-install`.
+*   **Domain Config:** `ddev setup-domain` to set up store URLs.
