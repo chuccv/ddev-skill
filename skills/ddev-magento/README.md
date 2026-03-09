@@ -4,7 +4,7 @@ Support for managing Magento 2 projects running on the DDEV platform. This skill
 
 ## Key Features:
 - **Fast Magento CLI Interaction:** Easily run commands like `setup:upgrade`, `setup:di:compile`, and `setup:static-content:deploy`.
-- **Multi-Service Management:** Integrated support for Redis, Elasticsearch, RabbitMQ, and Varnish.
+- **Multi-Service Management:** Integrated support for Redis, OpenSearch/Elasticsearch, RabbitMQ, and Varnish.
 - **Automated Upgrade Workflow:** Support for custom commands like `ddev upgrade` and `ddev reindex`.
 
 ## How to use:
