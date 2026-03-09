@@ -15,6 +15,7 @@ This skill provides comprehensive management for high-performance Magento 2 envi
     *   **Mailpit:** Email testing interface.
     *   **XHGui:** Performance profiling UI.
     *   **RabbitMQ:** Management dashboard.
+*   **Performance (Mutagen):** For macOS/Windows, ensure Mutagen is enabled for optimal speed: `ddev config --performance-mode=mutagen`.
 
 ## 2. Magento 2 Operations
 *   **Full Upgrade:** Run `ddev upgrade` (Custom command) or `ddev magento setup:upgrade`.
@@ -22,13 +23,23 @@ This skill provides comprehensive management for high-performance Magento 2 envi
 *   **Compilation:** `ddev magento setup:di:compile`.
 *   **Static Assets:** `ddev magento setup:static-content:deploy -f`.
 *   **Cache:** `ddev magento cache:flush`.
+*   **Mode Management:** `ddev magento deploy:mode:set developer`.
 
 ## 3. Search Services (OpenSearch / Elasticsearch)
-*   **OpenSearch:** Access via `http://opensearch:9200`. Check status: `ddev exec curl -s opensearch:9200`.
-*   **Elasticsearch 8:** Access via `http://elasticsearch:9200`. Check status: `ddev exec curl -s elasticsearch:9200`.
-*   **Switching:** Magento 2.4.x supports both. Configure in `env.php` or via admin dashboard.
+*   **OpenSearch (Recommended for 2.4+):** Install via `ddev add-on get ddev/ddev-opensearch`.
+    *   Access via `http://opensearch:9200`. 
+    *   Check status: `ddev exec curl -s opensearch:9200`.
+*   **Elasticsearch 8:** Access via `http://elasticsearch:9200`.
+*   **Configuration:** During install, use `--search-engine=opensearch --opensearch-host=opensearch --opensearch-port=9200`.
 
-## 4. Other Specialized Services
+## 4. Typical Installation Workflow
+1.  **Init:** `ddev config --project-type=magento2 --docroot=pub --upload-dirs=media --disable-settings-management`.
+2.  **Add-ons:** `ddev add-on get ddev/ddev-opensearch`.
+3.  **Composer:** `ddev composer create-project --repository https://repo.magento.com/ magento/project-community-edition`.
+4.  **Install:** `ddev magento setup:install` with appropriate DB and Search parameters.
+5.  **Dev Setup:** `ddev magento module:disable Magento_TwoFactorAuth` (optional for local dev) and `ddev magento deploy:mode:set developer`.
+
+## 5. Other Specialized Services
 *   **Redis:** Direct CLI access via `ddev redis-cli`.
 *   **Varnish:** Managed via the Varnish container. Purge cache using `ddev magento cache:flush`.
 *   **RabbitMQ:** Configure in `env.php` using host `rabbitmq`.
@@ -36,15 +47,8 @@ This skill provides comprehensive management for high-performance Magento 2 envi
     *   Enable profiling for web requests via config.
     *   Use `ddev profile-cli <command>` to profile Magento CLI commands.
 
-## 5. Development & Troubleshooting
-*   **Logs:** 
-    *   `ddev logs -f` (All logs)
-    *   `ddev logs -f web` (Nginx/PHP logs)
-    *   `ddev logs -f db` (MariaDB logs)
-*   **SSH Access:** `ddev ssh` to enter the web container.
-*   **Database:** `ddev mysql` for CLI access or use PhpMyAdmin URL from `ddev describe`.
-*   **Snapshot:** `ddev snapshot` to backup the database before risky operations.
-
-## 6. Setup & Domain
-*   **Fresh Install:** `ddev setup-install`.
-*   **Domain Config:** `ddev setup-domain` to set up store URLs.
+## 6. Development & Troubleshooting
+*   **Logs:** `ddev logs -f` or `ddev logs -f web`.
+*   **SSH Access:** `ddev ssh`.
+*   **Database:** `ddev mysql` or PhpMyAdmin.
+*   **Snapshot:** `ddev snapshot` for backups.
