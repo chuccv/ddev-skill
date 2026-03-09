@@ -1,6 +1,6 @@
 ---
 name: ddev-magento
-description: "Advanced management for Magento 2 on DDEV with MariaDB, Redis, Elasticsearch 8, RabbitMQ, Varnish, PhpMyAdmin, and XHGui/XHProf."
+description: "Advanced management for Magento 2 on DDEV with MariaDB, Redis, OpenSearch/Elasticsearch 8, RabbitMQ, Varnish, PhpMyAdmin, and XHGui/XHProf."
 ---
 
 # Workflow
@@ -23,8 +23,12 @@ This skill provides comprehensive management for high-performance Magento 2 envi
 *   **Static Assets:** `ddev magento setup:static-content:deploy -f`.
 *   **Cache:** `ddev magento cache:flush`.
 
-## 3. Specialized Services Management
-*   **Elasticsearch 8:** Access via `http://elasticsearch:9200` inside the container. Check status: `ddev exec curl -s elasticsearch:9200`.
+## 3. Search Services (OpenSearch / Elasticsearch)
+*   **OpenSearch:** Access via `http://opensearch:9200`. Check status: `ddev exec curl -s opensearch:9200`.
+*   **Elasticsearch 8:** Access via `http://elasticsearch:9200`. Check status: `ddev exec curl -s elasticsearch:9200`.
+*   **Switching:** Magento 2.4.x supports both. Configure in `env.php` or via admin dashboard.
+
+## 4. Other Specialized Services
 *   **Redis:** Direct CLI access via `ddev redis-cli`.
 *   **Varnish:** Managed via the Varnish container. Purge cache using `ddev magento cache:flush`.
 *   **RabbitMQ:** Configure in `env.php` using host `rabbitmq`.
@@ -32,7 +36,7 @@ This skill provides comprehensive management for high-performance Magento 2 envi
     *   Enable profiling for web requests via config.
     *   Use `ddev profile-cli <command>` to profile Magento CLI commands.
 
-## 4. Development & Troubleshooting
+## 5. Development & Troubleshooting
 *   **Logs:** 
     *   `ddev logs -f` (All logs)
     *   `ddev logs -f web` (Nginx/PHP logs)
@@ -41,6 +45,6 @@ This skill provides comprehensive management for high-performance Magento 2 envi
 *   **Database:** `ddev mysql` for CLI access or use PhpMyAdmin URL from `ddev describe`.
 *   **Snapshot:** `ddev snapshot` to backup the database before risky operations.
 
-## 5. Setup & Domain
+## 6. Setup & Domain
 *   **Fresh Install:** `ddev setup-install`.
 *   **Domain Config:** `ddev setup-domain` to set up store URLs.
