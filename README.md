@@ -1,12 +1,12 @@
 # DDEV Skills Registry
 
-Bộ sưu tập các kỹ năng DDEV cho AI Agent, được xây dựng cho hệ sinh thái [skills.sh](https://skills.sh/).
+A collection of DDEV skills for AI Agents, built for the [skills.sh](https://skills.sh/) ecosystem.
 
-## Danh sách kỹ năng:
-- **[ddev-magento](skills/ddev-magento/):** Quản lý và vận hành Magento 2 trên DDEV với đầy đủ dịch vụ (MySQL, Redis, Elasticsearch, RabbitMQ, Varnish).
+## Skills List:
+- **[ddev-magento](skills/ddev-magento/):** Manage and operate Magento 2 on DDEV with a full stack of services (MySQL, Redis, Elasticsearch, RabbitMQ, Varnish).
 
-## Cài đặt:
-Bạn có thể cài đặt bộ sưu tập này bằng cách:
+## Installation:
+You can install this collection using:
 ```bash
 npx skills add chuccv/ddev-skill
 ```

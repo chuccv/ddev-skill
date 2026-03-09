@@ -1,12 +1,12 @@
 # DDEV Magento Skill
 
-Hỗ trợ quản lý dự án Magento 2 chạy trên nền tảng DDEV. Kỹ năng này tập trung vào việc tự động hóa các quy trình deploy, quản lý dịch vụ và xử lý lỗi phổ biến trong quá trình phát triển Magento 2.
+Support for managing Magento 2 projects running on the DDEV platform. This skill focuses on automating deployment processes, managing services, and common troubleshooting during Magento 2 development.
 
-## Các tính năng chính:
-- **Tương tác nhanh với Magento CLI:** Dễ dàng chạy các lệnh như `setup:upgrade`, `setup:di:compile`, và `setup:static-content:deploy`.
-- **Quản lý đa dịch vụ:** Tích hợp với Redis, Elasticsearch, RabbitMQ và Varnish.
-- **Tự động hóa quy trình nâng cấp:** Hỗ trợ các lệnh custom như `ddev upgrade` và `ddev reindex`.
+## Key Features:
+- **Fast Magento CLI Interaction:** Easily run commands like `setup:upgrade`, `setup:di:compile`, and `setup:static-content:deploy`.
+- **Multi-Service Management:** Integrated support for Redis, Elasticsearch, RabbitMQ, and Varnish.
+- **Automated Upgrade Workflow:** Support for custom commands like `ddev upgrade` and `ddev reindex`.
 
-## Cách sử dụng:
-1.  Đảm bảo dự án Magento của bạn đã có cấu hình DDEV (`.ddev/config.yaml`).
-2.  Sử dụng kỹ năng này để yêu cầu AI thực hiện các tác vụ quản lý dự án một cách nhanh chóng.
+## How to use:
+1.  Ensure your Magento project has a DDEV configuration (`.ddev/config.yaml`).
+2.  Use this skill to ask the AI to perform project management tasks quickly.
