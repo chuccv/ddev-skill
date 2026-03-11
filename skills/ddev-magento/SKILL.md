@@ -18,8 +18,8 @@ This skill provides comprehensive management for high-performance Magento 2 envi
 *   **Performance (Mutagen):** For macOS/Windows, ensure Mutagen is enabled for optimal speed: `ddev config --performance-mode=mutagen`.
 
 ## 2. Magento 2 Operations
-*   **Full Upgrade:** Run `ddev upgrade` (Custom command) or `ddev magento setup:upgrade`.
-*   **Reindexing:** Run `ddev reindex`.
+*   **Upgrade:** `ddev magento setup:upgrade`.
+*   **Reindexing:** `ddev magento indexer:reindex`.
 *   **Compilation:** `ddev magento setup:di:compile`.
 *   **Static Assets:** `ddev magento setup:static-content:deploy -f`.
 *   **Cache:** `ddev magento cache:flush`.
@@ -45,9 +45,6 @@ This skill provides comprehensive management for high-performance Magento 2 envi
 *   **RabbitMQ:** Configure in `env.php` using host `rabbitmq`.
 *   **Profiling (XHGui/XHProf):**
     *   Enable profiling for web requests via config.
-    *   Use `ddev profile-cli <command>` to profile Magento CLI commands.
-
-## 6. Development & Troubleshooting
 *   **Logs:** `ddev logs -f` or `ddev logs -f web`.
 *   **SSH Access:** `ddev ssh`.
 *   **Database:** `ddev mysql` or PhpMyAdmin.
