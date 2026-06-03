@@ -1,12 +1,18 @@
 # DDEV Magento Skill
 
-Support for managing Magento 2 projects running on the DDEV platform. This skill focuses on automating deployment processes, managing services, and common troubleshooting during Magento 2 development.
+Manage Magento 2 projects on DDEV — from fresh install to service management and daily troubleshooting.
 
-## Key Features:
-- **Fast Magento CLI Interaction:** Easily run commands like `setup:upgrade`, `setup:di:compile`, and `setup:static-content:deploy`.
-- **Multi-Service Management:** Integrated support for Redis, OpenSearch/Elasticsearch, RabbitMQ, and Varnish.
-- **Automated Upgrade Workflow:** Support for custom commands like `ddev upgrade` and `ddev reindex`.
+## Covers
 
-## How to use:
-1.  Ensure your Magento project has a DDEV configuration (`.ddev/config.yaml`).
-2.  Use this skill to ask the AI to perform project management tasks quickly.
+- Fresh install workflow with complete commands
+- Services: OpenSearch, Redis, RabbitMQ, Varnish, XHGui
+- Add-ons management (cron, memcached, etc.)
+- Multi-store nginx config
+- Xdebug on/off
+- Magerun2, sample data, snapshot
+- Common mistakes and fixes
+
+## References
+
+- [DDEV Official Docs](https://docs.ddev.com/en/stable/)
+- [DDEV Magento 2 Quickstart](https://docs.ddev.com/en/stable/users/quickstart/#magento-2)
