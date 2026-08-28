@@ -91,6 +91,62 @@ ddev add-on search <keyword>   # search by keyword
 
 After installing any add-on, run `ddev restart` to apply changes.
 
+## OpenSearch Memory Limit
+
+The `ddev/ddev-opensearch` add-on ships **no memory ceiling**: the container inherits
+the whole host, and the JVM sizes its heap from host RAM. On a machine running several
+DDEV projects at once, each idle OpenSearch quietly holds 1-3 GB. Cap every project.
+
+Add `.ddev/docker-compose.opensearch_memory.yaml` — the name matters, it must sort
+**after** `docker-compose.opensearch.yaml` so its `OPENSEARCH_JAVA_OPTS` wins the merge:
+
+```yaml
+services:
+  opensearch:
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms<heap> -Xmx<heap>"
+    deploy:
+      resources:
+        limits:
+          memory: <ceiling>
+    healthcheck:
+      disable: true
+```
+
+Then `ddev restart`. Verify with `docker inspect ddev-<project>-opensearch --format '{{.HostConfig.Memory}}'`.
+
+**Sizing.** The ceiling covers heap **plus** native memory (mmap'd index segments,
+k-NN graphs, ML models) — budget roughly 2x the heap, never the heap alone:
+
+| Workload | Heap | Ceiling |
+|---|---|---|
+| Sample data / small catalog | 256m | 512M |
+| Full catalog, EE, several stores | 512m | 1500M |
+| Semantic / vector search (ML Commons models deployed) | 2g | 4g |
+
+**Verify by reindexing, not by watching the container start.** OpenSearch boots fine on
+a ceiling it cannot survive indexing on:
+
+```bash
+ddev magento indexer:reindex catalogsearch_fulltext
+docker ps -a --filter name=ddev-<project>-opensearch --format '{{.Status}}'
+```
+
+- `Exited (137)` = OOM-killed by the ceiling. Raise it one row in the table above.
+- `429` write-rejections during reindex = heap too small.
+- Container refuses to start = heap >= ceiling. Heap must stay strictly below.
+
+Sitting at 95-99% of the ceiling is normal and not a leak — most of it is reclaimable
+page cache for the index files.
+
+**Changing the ceiling without a restart:** `docker update --memory 4g --memory-swap 4g
+ddev-<project>-opensearch` applies immediately and keeps deployed ML models loaded.
+Write the same value into the YAML afterwards or the next `ddev restart` reverts it.
+
+**The dashboards container too.** `ddev-<project>-opensearch-dashboards` is a browser UI
+for inspecting indices; Magento never talks to it. It costs ~250-350 MB per project and
+is also uncapped — cap it at 512M, or drop it from the add-on if nobody opens it.
+
 ## Multi-Store Setup
 
 Add file `.ddev/nginx_full/magento-stores.conf`:
