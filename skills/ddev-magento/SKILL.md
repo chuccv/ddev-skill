@@ -104,7 +104,7 @@ Add `.ddev/docker-compose.opensearch_memory.yaml` — the name matters, it must 
 services:
   opensearch:
     environment:
-      - "OPENSEARCH_JAVA_OPTS=-Xms<heap> -Xmx<heap>"
+      - "OPENSEARCH_JAVA_OPTS=-Xms<half of heap> -Xmx<heap>"
     deploy:
       resources:
         limits:
@@ -115,14 +115,30 @@ services:
 
 Then `ddev restart`. Verify with `docker inspect ddev-<project>-opensearch --format '{{.HostConfig.Memory}}'`.
 
+**Set `-Xms` below `-Xmx`.** Every OpenSearch guide says to make them equal — that
+advice is for production nodes, where it avoids heap resizing under load. On a dev
+machine running several projects it just parks RAM: measured heap actually in use is
+200-320 MB, so `-Xms512m` commits 512 MB at boot to hold 210 MB. Halving `-Xms` took
+two projects from 1.08 GB / 0.99 GB down to 0.82 GB / 0.80 GB, verified across a full
+`indexer:reindex` and 10 minutes of idle afterwards.
+
+**A high ceiling costs nothing.** It caps growth, it does not reserve RAM — a container
+capped at 1500M that uses 800 MB takes 800 MB from the host. Lowering the ceiling saves
+nothing and only moves you closer to an OOM kill. Cut RSS with `-Xms`; leave headroom in
+the ceiling.
+
 **Sizing.** The ceiling covers heap **plus** native memory (mmap'd index segments,
 k-NN graphs, ML models) — budget roughly 2x the heap, never the heap alone:
 
 | Workload | Heap | Ceiling |
 |---|---|---|
-| Sample data / small catalog | 256m | 512M |
-| Full catalog, EE, several stores | 512m | 1500M |
+| Sample data only | 256m | 512M |
+| Any real catalog, CE or EE | 512m | 1500M |
 | Semantic / vector search (ML Commons models deployed) | 2g | 4g |
+
+512M is tighter than it looks: two projects on real catalogs booted fine on
+256m/512M, served traffic, reindexed successfully, and were OOM-killed minutes
+later. Start at 512m/1500M unless the project only ever holds sample data.
 
 **Verify by reindexing, not by watching the container start.** OpenSearch boots fine on
 a ceiling it cannot survive indexing on:
@@ -137,7 +153,10 @@ docker ps -a --filter name=ddev-<project>-opensearch --format '{{.Status}}'
 - Container refuses to start = heap >= ceiling. Heap must stay strictly below.
 
 Sitting at 95-99% of the ceiling is normal and not a leak — most of it is reclaimable
-page cache for the index files.
+page cache for the index files. The floor for a real catalog is ~800 MB: heap in use
+plus native memory no config reaches (Lucene mmap'd segments, thread stacks, metaspace,
+direct buffers). Below that, cut data — stale `top_queries-*` indices from the
+query-insights plugin and old `magento2_product_*_v*` generations pile up — not heap.
 
 **Changing the ceiling without a restart:** `docker update --memory 4g --memory-swap 4g
 ddev-<project>-opensearch` applies immediately and keeps deployed ML models loaded.
