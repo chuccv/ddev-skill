@@ -120,9 +120,13 @@ k-NN graphs, ML models) — budget roughly 2x the heap, never the heap alone:
 
 | Workload | Heap | Ceiling |
 |---|---|---|
-| Sample data / small catalog | 256m | 512M |
-| Full catalog, EE, several stores | 512m | 1500M |
+| Sample data only | 256m | 512M |
+| Any real catalog, CE or EE | 512m | 1500M |
 | Semantic / vector search (ML Commons models deployed) | 2g | 4g |
+
+512M is tighter than it looks: two projects on real catalogs booted fine on
+256m/512M, served traffic, reindexed successfully, and were OOM-killed minutes
+later. Start at 512m/1500M unless the project only ever holds sample data.
 
 **Verify by reindexing, not by watching the container start.** OpenSearch boots fine on
 a ceiling it cannot survive indexing on:
