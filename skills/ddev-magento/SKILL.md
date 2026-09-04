@@ -68,7 +68,7 @@ ddev launch /admin_ddev
 | Elasticsearch 8 | `elasticsearch:9200` | Alternative |
 | Redis | `redis:6379` | Session + cache |
 | RabbitMQ | `rabbitmq` | Configure in `env.php` |
-| Varnish | auto | Purge via `cache:flush` |
+| Varnish | `varnish:80` | Official add-on; traffic routed through Varnish |
 | PhpMyAdmin | URL from `ddev describe` | DB management |
 | XHGui | URL from `ddev describe` | Performance profiling |
 
@@ -81,7 +81,7 @@ ddev launch /admin_ddev
 | RabbitMQ | `ddev add-on get ddev/ddev-rabbitmq` | Message queue |
 | Cron | `ddev add-on get ddev/ddev-cron` | Run Magento scheduler every minute |
 | Memcached | `ddev add-on get ddev/ddev-memcached` | Alternative cache backend |
-| Varnish | Custom Docker Compose in `.ddev/` | Full-page cache |
+| Varnish | `ddev add-on get ddev/ddev-varnish` | Full-page cache (official add-on) |
 
 ```bash
 ddev add-on list               # list all available add-ons
@@ -165,6 +165,28 @@ Write the same value into the YAML afterwards or the next `ddev restart` reverts
 **The dashboards container too.** `ddev-<project>-opensearch-dashboards` is a browser UI
 for inspecting indices; Magento never talks to it. It costs ~250-350 MB per project and
 is also uncapped — cap it at 512M, or drop it from the add-on if nobody opens it.
+
+## Dropping a Service an Add-on Generated
+
+`docker-compose.<addon>.yaml` carries a `#ddev-generated` marker: edits are lost when the
+add-on is reinstalled. Do not delete the service block there. Add an override file that
+gives the service a profile instead — Compose skips any service whose profile is not
+activated, and DDEV activates none of its own:
+
+```yaml
+# .ddev/docker-compose.no-os-dashboards.yaml
+services:
+  opensearch-dashboards:
+    profiles:
+      - disabled
+```
+
+`ddev restart` then reports `Waiting for additional project containers [opensearch]` with
+no dashboards entry. Works for any generated service nothing else declares in `depends_on`
+— check first, because Compose errors on a `depends_on` pointing at a skipped service.
+
+Dropping `opensearch-dashboards` also frees the image once no project runs it:
+`opensearchproject/opensearch-dashboards:latest` is ~2 GB of layers shared with nothing.
 
 ## Multi-Store Setup
 
